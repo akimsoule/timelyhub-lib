@@ -1,0 +1,57 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# Logs
+logs
+*.log
+*.out
+*.err
+
+# Build
+dist/
+build/
+tmp/
+temp/
+
+# Test/Coverage
+coverage/
+.nyc_output/
+.vitest/
+
+# Bundlers & caches
+.vite/
+.turbo/
+.parcel-cache/
+.cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Linters
+.eslintcache
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Misc
+*.swp
+*.bak
+*.tmp
+
+# OS generated files
+Thumbs.db
+Desktop.ini

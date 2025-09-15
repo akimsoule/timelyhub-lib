@@ -1,0 +1,55 @@
+{
+  "name": "timelyhub-lib",
+  "version": "1.0.0",
+  "description": "Bibliothèque de gestion du temps pour les PME",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint -c eslint.config.cjs 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint -c eslint.config.cjs 'src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "prepare": "npm run build",
+    "start": "tsx src/main.ts"
+  },
+  "keywords": [
+    "time-management",
+    "pme",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
+  }
+}
