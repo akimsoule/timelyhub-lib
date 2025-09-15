@@ -16,7 +16,10 @@ export class EmailManager {
   render(name: EmailTemplate['name'], vars: Record<string, string>): { subject: string; body: string } {
     const t = this.templates.get(name)
     if (!t) throw new Error(`Template not found: ${name}`)
-    const fill = (s: string) => s.replace(/\{\{(.*?)\}\}/g, (_, k) => vars[k.trim()] ?? '')
+    const fill = (s: string) => s.replace(/\{\{(.*?)\}\}/g, (_m, k: string) => {
+      const key = String(k).trim()
+      return Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : ''
+    })
     return { subject: fill(t.subject), body: fill(t.body) }
   }
 }

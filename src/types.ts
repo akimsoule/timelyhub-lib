@@ -120,7 +120,8 @@ export type EventName =
   | 'entry.submitted'
   | 'entry.approved'
   | 'entry.rejected'
-  | 'period.closed';
+  | 'period.closed'
+  | 'budget.threshold';
 
 export interface DomainEvent {
   name: EventName;
@@ -142,4 +143,95 @@ export interface EmailTemplate {
   name: 'entry_submitted' | 'entry_approved' | 'entry_rejected' | 'period_closed';
   subject: string;
   body: string; // peut contenir des tokens {{var}}
+}
+
+// Persistence (Ports/Adapters)
+export interface Repository<T extends { id: string }> {
+  getById(id: string): T | undefined;
+  list(): ReadonlyArray<T>;
+  upsert(entity: T): void;
+  remove(id: string): void;
+  clear(): void;
+}
+
+export interface UnitOfWorkSnapshot {
+  // opaque marker for rollback
+  id: string;
+}
+
+export interface UnitOfWork {
+  begin(): UnitOfWorkSnapshot;
+  commit(snapshot: UnitOfWorkSnapshot): void;
+  rollback(snapshot: UnitOfWorkSnapshot): void;
+}
+
+export interface PersistenceAdapter {
+  companies: Repository<Company>;
+  employees: Repository<Employee>;
+  projects: Repository<Project>;
+  entries: Repository<TimeEntry>;
+}
+
+// Reporting
+export type GroupByField = 'companyId' | 'employeeId' | 'projectId' | 'status' | 'tag' | 'day' | 'week' | 'month';
+export interface ReportFilter {
+  companyId?: string;
+  employeeId?: string;
+  projectId?: string;
+  status?: EntryStatus;
+  startDate?: Date;
+  endDate?: Date;
+  tags?: string[];
+}
+export interface AggregationQuery {
+  groupBy: GroupByField[];
+  filters?: ReportFilter;
+  rollup?: 'hours' | 'cost';
+}
+export interface AggregationBucket {
+  key: Record<string, string>;
+  hours: number;
+  cost?: { amount: number; currency: string };
+  count: number;
+}
+
+// Budgets
+export type BudgetScope = 'project' | 'team' | 'phase';
+export interface BudgetDefinition {
+  id: string;
+  companyId: string;
+  scope: BudgetScope;
+  key: string; // projectId | teamId | phaseId
+  limitHours?: number;
+  limitAmount?: { amount: number; currency: string };
+  alertThresholds?: number[]; // e.g., [0.8, 1.0]
+}
+export interface BudgetConsumption {
+  hours: number;
+  amount?: { amount: number; currency: string };
+}
+
+// Notifications / Webhooks / Slack
+export type NotificationChannel = 'webhook' | 'slack';
+export interface WebhookSubscription {
+  id: string;
+  url: string; // No network calls here; stored for reference
+  events: string[]; // interested events
+}
+export interface SlackSubscription {
+  id: string;
+  channel: string; // e.g., #timesheets
+  events: string[];
+}
+export interface OutboundNotification {
+  id: string;
+  channel: NotificationChannel;
+  event: DomainEvent;
+  target: string; // url or channel
+  payload: Record<string, unknown>;
+}
+
+// Holiday provider
+export interface HolidayProvider {
+  fetch(country: string, year: number): Holiday[];
 }

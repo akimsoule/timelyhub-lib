@@ -1,10 +1,12 @@
+/* eslint-env node */
+/* global console, process */
 // Exemple complet d'utilisation de la librairie
 // Exécution conseillée: npx tsx src/main.ts
 
 import { TimeManager } from './TimeManager'
-import type { Company, Employee, Project, TimeEntry, RateCard } from './types'
+import type { Company, Employee, Project, TimeEntry, RateCard, PermissionAction } from './types'
 
-async function main() {
+function main() {
   const tm = new TimeManager()
 
   // 1) Données de base
@@ -24,7 +26,8 @@ async function main() {
 
   // 2) RBAC: donner les droits au manager
   tm.access.setUserRole('c1','m1','manager')
-  ;['approve','reject','closePeriod'].forEach(a => tm.access.allow('c1', a as any, 'manager'))
+  const actions: PermissionAction[] = ['approve','reject','closePeriod']
+  actions.forEach(a => tm.access.allow('c1', a, 'manager'))
 
   // 3) Tarifs: 100 EUR/h pour l'employé
   const rate: RateCard = { id: 'r1', companyId: 'c1', target: 'employee', key: 'e1', billable: true, rate: 100, currency: 'EUR' }
@@ -77,7 +80,9 @@ async function main() {
   console.table(tm.emails.all())
 }
 
-main().catch(err => {
+try {
+  main()
+} catch (err) {
   console.error(err)
   process.exitCode = 1
-})
+}
